@@ -16,6 +16,8 @@ function Professeurs() {
       const title = [ "id","name","email","level"];
 
       const handleCreate=(values)=>{
+        values.password="123456"
+        values.role="PROFESSEUR"
         dispatch(createProf(values)).then(res=>{
           if (res?.status === true) {
             setMessage("success ");

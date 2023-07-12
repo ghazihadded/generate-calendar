@@ -1,22 +1,29 @@
 const Admin=require('../models/Admin')
+const Groupe=require('../models/Groupe')
 const bcrypt = require("bcryptjs");
 const {jsonWebToken}=require('../utils')
 const jwt = require("jsonwebtoken");
 
 
 exports.createAdmin=async(req,res)=>{
-    const {email,password,name}=req.body
+    const {email,password,name,role,level,speciality}=req.body
     try {
         
         const admin= await Admin.findOne({email})
-        if(admin){ return res.status(200).json({status:false,message:"admin has already exist"})}
+        if(admin){ return res.status(200).json({status:false,message:"user has already exist"})}
         
-        const newAdmin=await Admin.create({
+          const newAdmin=await Admin.create({
             email,
             password,
-            name
+            name,
+            level:level &&level,
+            speciality:speciality && speciality,
         })
-
+    
+        if(role){
+          newAdmin.role=role
+          
+        }
         const salt = await bcrypt.genSalt(10);
         newAdmin.password = await bcrypt.hash(password, salt);
         
@@ -26,19 +33,24 @@ exports.createAdmin=async(req,res)=>{
              const payload = {
             id: newAdmin._id,
           name:newAdmin.name,
-          email:newAdmin.email
+          email:newAdmin.email,
+          role:newAdmin.role,
           };
     
          jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, (err, token) => {
            if (err){ return  res.status(400).send(err);}
-          
-           res.status(200).json({
+        
+         return  res.status(200).json({
             status:true,
                 token,
                 user:{
                     name:newAdmin.name,
                     email:newAdmin.email,
-                    _id:newAdmin._id 
+                    _id:newAdmin._id,
+                     role:newAdmin.role,
+                     level:{
+                      level:newAdmin?.level?.level
+                     }
                 },
               });
          });
@@ -69,7 +81,8 @@ exports.login=async(req,res)=>{
         
           id: admin._id,
           name:admin.name,
-          email:admin.email
+          email:admin.email,
+          role:admin.role,
       };
 
     jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, (err, token) => {

@@ -20,7 +20,12 @@ const EtudiantSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "groupe",
   },
- 
+  role:{
+    type:String ,
+    default:"ETUDIANT",
+    required :true ,
+    
+},
   date: {
     type: Date,
     default: Date.now,

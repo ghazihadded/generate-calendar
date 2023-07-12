@@ -2,6 +2,7 @@ const Etudiant=require('../models/Etudiant')
 const Groupe=require('../models/Groupe')
 const GroupeProf=require('../models/GroupeProf')
 const Level=require('../models/Level')
+const Admin=require('../models/Admin')
 
 
 
@@ -10,7 +11,7 @@ exports.createGroupe=async(req,res)=>{
     try {
         
        
-       const user=await Etudiant.findById(req.params.id).populate('level')
+       const user=await Admin.findById(req.params.id).populate('level')
        const groupes=await Groupe.find({level:user.level._id})
        
        const findUser= groupes.find(el=>el?._id?.toString()===user?.groupe?.toString())
@@ -135,6 +136,23 @@ exports.getAllGroupe=async(req,res)=>{
     try {
         
         const groupe= await Groupe.find()
+        res.status(200).json({
+            groupe
+        })
+        
+     
+    } catch (err) {
+        res.status(500).send(err)
+    }
+}
+
+
+
+exports.getAllGroupeByGroupe=async(req,res)=>{
+   
+    try {
+        const user =await Admin.findById(req.user.id)
+        const groupe= await Groupe.find({_id:user.groupe})
         res.status(200).json({
             groupe
         })

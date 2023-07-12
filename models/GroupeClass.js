@@ -11,7 +11,9 @@ const GroupeClasseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  
+  matiere: {
+    type: String,
+  },
   groupe: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "groupe",

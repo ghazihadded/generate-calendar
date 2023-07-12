@@ -1,6 +1,8 @@
 const Etudiant=require('../models/Etudiant')
 const Groupe=require('../models/Groupe')
 const Level=require('../models/Level')
+const Admin=require('../models/Admin')
+
 
 
 
@@ -35,10 +37,10 @@ exports.createEtudiant=async(req,res)=>{
 exports.updateEtudiant=async(req,res)=>{
     try {
         
-       let user= await Etudiant.findById(req.params.id)
+       let user= await Admin.findById(req.params.id)
         if(!user){ return res.status(200).json({status:false,message:"user not found"})}
         
-        user=await Etudiant.findOneAndUpdate({_id:req.params.id},{$set: req.body },{new:true})
+        user=await Admin.findOneAndUpdate({_id:req.params.id},{$set: req.body },{new:true})
 
       
         
@@ -57,7 +59,7 @@ exports.deleteEtudinat=async(req,res)=>{
         
     
         
-       const user=await Etudiant.findOneAndRemove({_id:req.params.id})
+       const user=await Admin.findOneAndRemove({_id:req.params.id})
      
       
        if (!user) {
@@ -81,7 +83,7 @@ exports.getEtudiant=async(req,res)=>{
         
     
         
-       const users=await Etudiant.find().populate('level')
+       const users=await Admin.find({role:"ETUDIANT"}).populate('level')
         res.status(200).send({ users});
         
      
@@ -94,7 +96,8 @@ exports.getEtudiant=async(req,res)=>{
 exports.getEtudiantById=async(req,res)=>{
     try {
         
-        const user=await Etudiant.findById(req.params.id).populate('level')
+        const user=await Admin.findById(req.params.id).populate('level')
+       
        if(!user){ return res.status(400).json({message:"user not found"})}
         res.status(200).send({ user});
         

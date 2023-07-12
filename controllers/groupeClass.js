@@ -1,6 +1,7 @@
 const Groupe = require("../models/Groupe");
 const Classroom = require("../models/ClassRoom");
 const GroupeClass = require("../models/GroupeClass");
+const Admin=require('../models/Admin')
 
 exports.generate = async (req, res) => {
   try {
@@ -31,8 +32,10 @@ exports.generate = async (req, res) => {
       "16h-17h",
     ];
 
-    const obj = {};
-    const objGroup = {};
+    const matieres = ["mathémathique", "info", "science", "physique", "sport","anglais","technique"];
+
+    
+ 
 
     let groupe = 0;
     let dayFilter = [];
@@ -41,11 +44,10 @@ exports.generate = async (req, res) => {
     let classFilter = [];
     let timeText;
     let timeFilter = [];
+    let objArray = [];
+    let newObjArray=[];
     while (groupe < groups.length) {
-      if (!objGroup[groups[groupe]._id]) {
-        objGroup[groups[groupe]._id] = {};
-      }
-
+      
       if (dayFilter.length === 0) {
         dayFilter = days;
       }
@@ -55,48 +57,45 @@ exports.generate = async (req, res) => {
       }
 
       day = Math.floor(Math.random() * dayFilter.length);
-
-      if (!obj[dayFilter[day]]) {
-        obj[dayFilter[day]] = {};
-      }
-      if (!objGroup[groups[groupe]._id][dayFilter[day]]) {
-        objGroup[groups[groupe]._id][dayFilter[day]] = {};
-      }
-
+     
       if (!dispo) {
         timeFilter = timeFilter.filter((el) => el !== timeText);
         dispo = true;
       } else {
         timeFilter = timeSlots;
       }
+      let matiereFilter = [];
+      let matiere;
+      let counter=0;
       for (let c = 0; c < classFilter.length; c++) {
         if (timeFilter.length === 0) {
           timeFilter = timeSlots;
         }
-        if (!obj[dayFilter[day]][classFilter[c]._id]) {
-          obj[dayFilter[day]][classFilter[c]._id] = {};
+        if (matiereFilter.length === 0) {
+          matiereFilter = matieres;
         }
-        if (!objGroup[groups[groupe]._id][dayFilter[day]][classFilter[c]._id]) {
-          objGroup[groups[groupe]._id][dayFilter[day]][classFilter[c]._id] = {};
-        }
+
+        matiere = Math.floor(Math.random() * matiereFilter.length);
 
         for (let t = 0; t < timeSlots.length; t++) {
-          if (
-            obj[dayFilter[day]][classFilter[c]._id][timeFilter[t]] !==
-            timeFilter[t]
-          ) {
-            obj[dayFilter[day]][classFilter[c]._id][timeFilter[t]] =
-              timeFilter[t];
-            objGroup[groups[groupe]._id][dayFilter[day]][classFilter[c]._id] =
-              timeFilter[t];
+          
+          if (!newObjArray.find(el=>el.day===dayFilter[day] && el.time===timeFilter[t])) {
+          
+            newObjArray.push({day:dayFilter[day],class:classFilter[c]._id,time:timeFilter[t],matiere:matiereFilter[matiere]})
+            objArray.push({groupe:groups[groupe]._id,day:dayFilter[day],class:classFilter[c]._id,time:timeFilter[t],matiere:matiereFilter[matiere]})
 
             timeText = timeFilter[t];
+            counter++
             dispo = false;
             break;
           }
         }
         if (!dispo) {
           classFilter = classFilter.filter((el) => el !== classFilter[c]);
+           matiereFilter = matiereFilter.filter((el) => el !== matiereFilter[matiere]);
+           timeFilter = timeFilter.filter((el) => el !== timeText);
+        }
+        if(counter ===3){
           break;
         }
       }
@@ -107,43 +106,27 @@ exports.generate = async (req, res) => {
         groupe++;
       }
     }
-
-    const arr = [];
-    for (const groupKey in objGroup) {
-      const group = objGroup[groupKey];
-      for (const dayKey in group) {
-        const day = group[dayKey];
-        for (const classKey in day) {
-          const time = day[classKey];
-          arr.push({
-            groupe: groupKey,
-            day: dayKey,
-            class: classKey,
-            time: time,
-          });
-        }
-      }
-    }
+    
 
     const groupeClasses = [];
-     arr.forEach(async (el,i) => {
+     objArray.forEach(async (el,i) => {
       if (
         typeof el.day === "string" &&
         typeof el.time === "string" &&
-        typeof el.groupe === "string" &&
-        typeof el.class === "string"
+        typeof el.matiere === "string"
       ) {
         const groupeClass = new GroupeClass({
           day: el.day,
           time: el.time,
           groupe: el.groupe,
           classRoom: el.class,
+          matiere:el.matiere,
         });
 
         const newGroupeClass = await groupeClass.save();
         groupeClasses.push(newGroupeClass);
       }
-      if(i === arr.length-1){
+      if(i === objArray.length-1){
        return res.status(200).json({ status: true,length:groupeClasses.length, groupeClasses });
       }
     
@@ -170,6 +153,18 @@ exports.deleteAll = async (req, res) => {
   try {
     await GroupeClass.deleteMany();
     res.status(200).json({ status: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+exports.getByGroupe = async (req, res) => {
+  
+  try {
+    const user = await Admin.findById(req.user.id)
+    const groupeClasses = await GroupeClass.find({groupe:user.groupe}).populate(['groupe', 'classRoom']);
+    res.status(200).json({ groupeClasses });
   } catch (error) {
     console.log(error);
   }

@@ -61,7 +61,12 @@ export default function SignIn() {
         setType("error")
         setLoading(false)
       }else if(res?.status===true){
-        navigate("/")
+        if(res.user.role==="ADMIN"){
+          navigate("/")
+        }else{
+          navigate(`/${res?.user?.role.toLowerCase()}`)
+        }
+        
       }
     })
   }

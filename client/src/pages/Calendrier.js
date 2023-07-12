@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@mui/material";
 import { Box, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createAllGroueClass,deleteAllGroueClass,getAllGroueClass } from "../services/adminServices";
 import AlertNotif from "../component/AlertNotif";
+import Calendar from "../component/Calendar";
 
 const Calendrier = () => {
   const [loading, setLoading] = useState(false);
@@ -21,18 +14,7 @@ const Calendrier = () => {
   const dispatch = useDispatch();
   const { groupeClasse } = useSelector((state) => state.groupeClasses);
 
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  const timeSlots = [
-    "8h-9h",
-    "9h-10h",
-    "10h-11h",
-    "11h-12h",
-    "12h-13h",
-    "13h-14h",
-    "14h-15h",
-    "15h-16h",
-    "16h-17h",
-  ];
+  
 
 
   useEffect(()=>{
@@ -50,17 +32,7 @@ const Calendrier = () => {
     setOpen(false);
   };
 
-  const getScheduleData = (day, timeSlot) => {
-    const filteredData = groupeClasse?.find(
-      (item) => item?.day === day && item?.time === timeSlot
-    );
-    return filteredData ? (
-      <>
-      <p>{`group-${filteredData?.groupe?.number}`}</p>
-      <p>{filteredData?.classRoom?.title}</p>
-      </>
-    ) : "";
-  };
+ 
 
   const create = () => {
     setLoadingCreate(true);
@@ -104,32 +76,7 @@ const Calendrier = () => {
           {loadingCreate?
         <p>loading...</p>
         :
-<TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell></TableCell>
-                  {daysOfWeek.map((day) => (
-                    <TableCell align="center" key={day}>
-                      {day}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {timeSlots.map((timeSlot) => (
-                  <TableRow key={timeSlot}>
-                    <TableCell>{timeSlot}</TableCell>
-                    {daysOfWeek.map((day) => (
-                      <TableCell align="center" key={`${day}-${timeSlot}`}>
-                        {getScheduleData(day, timeSlot)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Calendar  groupeClasse={groupeClasse} />
         }
           
         </>

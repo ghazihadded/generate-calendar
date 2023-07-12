@@ -2,6 +2,7 @@
 import {
     GET_ALL_PROF,
     POST_PROF,
+    GET_ALL_PROF_LEVEL
 } from '../type';
 
 
@@ -20,6 +21,9 @@ const professeurReducer = (state = initialState, action) => {
             case POST_PROF:
            
             return   {...state,professeurs:[...state.professeurs,payload.user]} 
+            case GET_ALL_PROF_LEVEL:
+           
+            return   {...state,professeurs:payload.user} 
         default:
 
             return state

@@ -19,6 +19,7 @@ import AlertNotif from '../component/AlertNotif';
 
 
 
+
 const validationSchema = Yup.object().shape({
 
  name: Yup.string().required("name required"),
@@ -90,6 +91,7 @@ export default function Register() {
                     name:"",
                     email: "",
                     password: "",
+                    role:"ADMIN",
                   }}
 
                   validationSchema={validationSchema}
@@ -106,6 +108,7 @@ export default function Register() {
                         <Inputs field={"name"} label={"name"} handleChange={handleChange} error={errors.name} />
                       <Inputs field={"email"} label={"Email Address"} handleChange={handleChange} error={errors.email} />
                       <Inputs field={"password"} label={"password"} handleChange={handleChange} error={errors.password} type={"password"}/>
+                       
                       <Button
                            type="submit"
                            fullWidth

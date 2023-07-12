@@ -19,6 +19,12 @@ const ProfesseurSchema = new mongoose.Schema({
     type:String,
     required: true,
   },
+  role:{
+    type:String ,
+    default:"PROFESSEUR",
+    required :true ,
+    
+},
   date: {
     type: Date,
     default: Date.now,

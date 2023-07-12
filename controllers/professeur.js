@@ -1,6 +1,8 @@
 const Professeur=require('../models/Professeur')
 const GroupeProf=require('../models/GroupeProf')
+const Admin=require('../models/Admin')
 
+  
 
 
 exports.createProf=async(req,res)=>{
@@ -36,10 +38,10 @@ exports.createProf=async(req,res)=>{
 exports.updateProf=async(req,res)=>{
     try {
         
-       let user= await Professeur.findById(req.params.id)
+       let user= await Admin.findById(req.params.id)
         if(!user){ return res.status(400).json({ status: false,message:"user not found"})}
         
-        user=await Professeur.findOneAndUpdate({_id:req.params.id},{$set: req.body },{new:true})
+        user=await Admin.findOneAndUpdate({_id:req.params.id},{$set: req.body },{new:true})
 
       
         
@@ -75,11 +77,13 @@ exports.getProfs=async(req,res)=>{
         
     
         
-       const users=await Professeur.find().populate('level')
+       const users=await Admin.find({role:"PROFESSEUR"}).populate('level')
+      
         res.status(200).send({ users});
         
      
     } catch (err) {
+      
         res.status(500).send(err)
     }
 }
@@ -88,9 +92,26 @@ exports.getProfs=async(req,res)=>{
 exports.getProfById=async(req,res)=>{
     try {
         
-        const user=await Professeur.findById(req.params.id).populate('level')
+        const user=await Admin.findById(req.params.id).populate('level')
+       
        if(!user){ return res.status(400).json({message:"user not found"})}
         res.status(200).send({user});
+        
+     
+    } catch (err) {
+        res.status(500).send(err)
+    }
+}
+
+exports.getProfByLevel=async(req,res)=>{
+    console.log(req.user.id)
+    try {
+        
+        const user=await Admin.findById(req.user.id)
+        // 
+        const professeurs= await Admin.find({level:user.level,role:"PROFESSEUR"}).populate('level')
+       if(!professeurs){ return res.status(400).json({message:"user not found"})}
+        res.status(200).send({user:professeurs});
         
      
     } catch (err) {

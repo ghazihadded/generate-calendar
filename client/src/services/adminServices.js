@@ -20,7 +20,8 @@ import {
   POST_PROF,
   DELETE_GROUPE_CLASS,
   GET_GROUE_CLASS,
-  ALL_CLASSES
+  ALL_CLASSES,
+  GET_ALL_PROF_LEVEL,
 } from "../redux/type";
 
 import jwt_decode from "jwt-decode";
@@ -42,6 +43,7 @@ export const getAdmin = (token) => async (dispatch) => {
       });
 
       console.log(data)
+      return data
     }
   } catch (error) {
     console.log(error);
@@ -57,7 +59,7 @@ export const login = (form) => async (dispatch) => {
         payload: data,
       });
     }
-    console.log(data)
+  
     return data;
   } catch (error) {
     console.log(error);
@@ -74,6 +76,8 @@ export const register = (form) => async (dispatch) => {
       });
     }
 
+
+    console.log(data)
     return data;
   } catch (error) {
     console.log(error);
@@ -124,6 +128,21 @@ export const getAllProf = (form) => async (dispatch) => {
     });
 
     //    return data
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllProfByLevel = (form) => async (dispatch) => {
+  let http = refreshToken();
+  try {
+    let { data } = await http.get("/prof/level");
+
+    dispatch({
+      type: GET_ALL_PROF_LEVEL,
+      payload: data,
+    });
+
   } catch (error) {
     console.log(error);
   }
@@ -274,10 +293,22 @@ export const getAllGroupe = () => async (dispatch) => {
         type: GET_GROUPES,
         payload: data,
       });
+} catch (error) {
+    console.log(error);
+  }
+};
 
-    
+
+export const getAllGroupeByGroupe = () => async (dispatch) => {
+  let http = refreshToken();
+  try {
+    let { data } = await http.get("/groupe/byGroupe");
    
-  } catch (error) {
+      dispatch({
+        type: GET_GROUPES,
+        payload: data,
+      });
+} catch (error) {
     console.log(error);
   }
 };
@@ -321,7 +352,7 @@ export const getAllLevel = () => async (dispatch) => {
 export const createStudent = (form) => async (dispatch) => {
   let http = refreshToken();
   try {
-    let { data } = await http.post("/etudiant",form);
+    let { data } = await http.post("/admin",form);
     
     if (data?.status === true) {
       dispatch({
@@ -341,16 +372,17 @@ export const createStudent = (form) => async (dispatch) => {
 
 
 export const createProf = (form) => async (dispatch) => {
-  let http = refreshToken();
+  console.log(form)
+ 
   try {
-    let { data } = await http.post("/prof",form);
+    let { data } = await http.post("/admin",form);
     if (data?.status === true) {
       dispatch({
         type: POST_PROF,
         payload: data,
       });
     }
-    
+    console.log(data)
   return data
    } catch (error) {
     console.log(error);
@@ -419,6 +451,22 @@ export const getAllGroueClass = () => async (dispatch) => {
         payload: data,
       });
 
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const getCalendarByGroupe = () => async (dispatch) => {
+  let http = refreshToken();
+  try {
+    let { data } = await http.get("/groupeClass/byGroupe");
+   
+      dispatch({
+        type: ALL_CLASSES,
+        payload: data,
+      });
+
       console.log(data)
 
 
@@ -427,6 +475,8 @@ export const getAllGroueClass = () => async (dispatch) => {
     console.log(error);
   }
 };
+
+
 
 
 export const logOUt = () => async (dispatch) => {

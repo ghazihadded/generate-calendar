@@ -50,7 +50,7 @@ const Groupes = () => {
 
 
   const create=(value)=>{
-    console.log(value)
+   
     dispatch(createGroupe(value)).then(res=>{
       if (res?.status === true) {
         setMessage("success");
